@@ -7,31 +7,34 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+use App\Entity\Conference;
+use App\Repository\ConferenceRepository;
+use App\Repository\CommentRepository;
+
+
 class ConferenceController extends AbstractController
 {
 
     #[Route('/', name: 'homepage')]
-    public function index( Request $request ): Response
+    public function index(ConferenceRepository $conferenceRepository): Response
     {
-//         return $this->render('conference/index.html.twig', [
-//             'controller_name' => 'ConferenceController',
-//         ]);
+        return $this->render('conference/index.html.twig', [
+             'conferences' => $conferenceRepository->findAll(),
+        ]);
+    }
 
-        dump($request);  // to console
+    #[Route('/conference/{id}', name: 'conference')]
+    public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
+    {
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $commentPaginator = $commentRepository->getCommentPaginator($conference, $offset);
 
-        $greet = '';
-        if ($name = $request->query->get('hello')) {
-            $greet = sprintf('<h1>Hello %s!</h1>', htmlspecialchars($name));
-        }
-
-        $rv = <<<EOF
-<html>
-<body>
-    <p>$greet</p>
-    <p><img src="/images/under-construction.gif" /></p>
-</body>
-</html>
-EOF;
-        return new Response( $rv );
+        return $this->render('conference/show.html.twig', [
+            'conference' => $conference,
+            //'comments' => $commentRepository->findBy(['conference' => $conference], ['createdAt' => 'DESC']),
+            'comments' => $commentPaginator,
+            'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
+            'next'     => min(count($commentPaginator), $offset + CommentRepository::COMMENTS_PER_PAGE),
+        ]);
     }
 }
