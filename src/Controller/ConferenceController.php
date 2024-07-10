@@ -23,14 +23,23 @@ class ConferenceController extends AbstractController
         ]);
     }
 
+    /*
+     * $conferences add in guestbook/src/EventSubscriber/TwigEventSubscriber.php
+     */
     #[Route('/conference/{id}', name: 'conference')]
-    public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
+    public function show(
+        Request $request
+        , Conference $conference
+        , CommentRepository $commentRepository
+        //, ConferenceRepository $conferenceRepository
+        ): Response
     {
         $offset = max(0, $request->query->getInt('offset', 0));
         $commentPaginator = $commentRepository->getCommentPaginator($conference, $offset);
 
         return $this->render('conference/show.html.twig', [
-            'conference' => $conference,
+            //'conferences' => $conferenceRepository->findAll(),
+            'conference'  => $conference,
             //'comments' => $commentRepository->findBy(['conference' => $conference], ['createdAt' => 'DESC']),
             'comments' => $commentPaginator,
             'previous' => $offset - CommentRepository::COMMENTS_PER_PAGE,
