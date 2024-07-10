@@ -22,7 +22,7 @@ class ConferenceRepository extends ServiceEntityRepository
     }
 
     /**
-     * override, add sort
+     * @return Conference[] Returns sorted array of Conference objects
      */
     public function findAll(): array
     {

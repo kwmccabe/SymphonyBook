@@ -26,6 +26,15 @@ class CommentRepository extends ServiceEntityRepository
     }
 
 
+    /**
+     * @return Comment[] Returns sorted array of Comment objects
+     */
+    public function findAll(): array
+    {
+        return $this->findBy([], ['createdAt' => 'DESC']);
+    }
+
+
     public function getCommentPaginator(Conference $conference, int $offset): Paginator
     {
         $query = $this->createQueryBuilder('c')
