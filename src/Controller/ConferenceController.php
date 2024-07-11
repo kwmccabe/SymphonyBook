@@ -26,7 +26,7 @@ class ConferenceController extends AbstractController
     /*
      * $conferences add in guestbook/src/EventSubscriber/TwigEventSubscriber.php
      */
-    #[Route('/conference/{id}', name: 'conference')]
+    #[Route('/conference/{slug}', name: 'conference')]
     public function show(
         Request $request
         , Conference $conference

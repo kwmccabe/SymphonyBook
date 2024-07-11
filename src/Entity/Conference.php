@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+use Psr\Log\LoggerInterface;
+
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 #[UniqueEntity('slug')]
 class Conference
@@ -36,6 +38,10 @@ class Conference
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
 
+
+    /*
+     * constructor
+     */
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -46,16 +52,16 @@ class Conference
         return $this->city.' '.$this->year;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function computeSlug(SluggerInterface $slugger)
     {
         if (!$this->slug || '-' === $this->slug) {
             $this->slug = (string) $slugger->slug((string) $this)->lower();
         }
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getCity(): ?string
