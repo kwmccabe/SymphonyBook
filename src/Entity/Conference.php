@@ -6,10 +6,10 @@ use App\Repository\ConferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-use Psr\Log\LoggerInterface;
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 #[UniqueEntity('slug')]
@@ -38,13 +38,20 @@ class Conference
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
 
+    private ?LoggerInterface $logger = null;
 
     /*
      * constructor
      */
-    public function __construct()
+    public function __construct(
+        LoggerInterface $logger,
+        )
     {
         $this->comments = new ArrayCollection();
+        $this->logger = $logger;
+$this->logger->info('HERE WE ARE XXX');
+dd($logger);
+
     }
 
     public function __toString(): string
@@ -54,6 +61,7 @@ class Conference
 
     public function computeSlug(SluggerInterface $slugger)
     {
+$this->logger->info('HERE WE ARE XXX');
         if (!$this->slug || '-' === $this->slug) {
             $this->slug = (string) $slugger->slug((string) $this)->lower();
         }
