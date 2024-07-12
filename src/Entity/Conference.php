@@ -86,7 +86,7 @@ class Conference
         return $this;
     }
 
-    public function isInternational(): ?bool
+    public function getIsInternational(): ?bool
     {
         return !empty($this->isInternational);
     }

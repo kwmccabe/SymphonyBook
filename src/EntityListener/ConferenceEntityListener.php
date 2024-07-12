@@ -18,7 +18,7 @@ class ConferenceEntityListener
 
     public function __construct(
         private SluggerInterface $slugger,
-        private LoggerInterface $logger,
+//        private LoggerInterface $logger,
     ) {
 //$this->logger->info('XXX - '.__METHOD__);
     }
