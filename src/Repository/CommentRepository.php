@@ -39,7 +39,9 @@ class CommentRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('c')
             ->andWhere('c.conference = :conference')
+            ->andWhere('c.status = :status')
             ->setParameter('conference', $conference)
+            ->setParameter('status', 'published')
             ->orderBy('c.createdAt', 'DESC')
             ->setMaxResults(self::COMMENTS_PER_PAGE)
             ->setFirstResult($offset)
@@ -73,4 +75,15 @@ class CommentRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findOneByEmail($value): ?Comment
+    {
+       return $this->createQueryBuilder('c')
+           ->andWhere('c.email = :val')
+           ->setParameter('val', $value)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+    }
+
 }

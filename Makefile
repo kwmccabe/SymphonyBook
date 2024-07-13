@@ -10,6 +10,10 @@ stop:
 	docker compose down
 .PHONY: stop
 
+dbconnect:
+	docker compose exec database psql app app
+.PHONY: dbconnect
+
 migration:
 	./bin/console make:migration
 .PHONY: migration

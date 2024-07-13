@@ -53,6 +53,7 @@ class ConferenceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid())
         {
             $comment->setConference($conference);
+            $comment->setStatus('submitted');
 
             if ($photo = $form['photo']->getData()) {
                 $filename = bin2hex(random_bytes(6)).'.'.$photo->guessExtension();
@@ -72,6 +73,9 @@ class ConferenceController extends AbstractController
 $this->logger->info('XXX - '.__METHOD__.' spamScore='.$spamScore);
             if (2 === $spamScore) {
                 throw new \RuntimeException('Blatant spam, go away!');
+            }
+            if (1 === $spamScore) {
+                $comment->setStatus('spam');
             }
 
             $this->entityManager->flush();
