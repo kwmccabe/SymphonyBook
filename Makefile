@@ -1,12 +1,18 @@
+#!make
+include .env
+include .env.local
+
 SHELL := /bin/bash
+
 
 .PHONY: start status stop
 
 start: start-docker start-server start-messenger
 
 status:
-	symfony server:status
+	symfony console messenger:failed:show
 	docker compose ps
+	symfony server:status
 
 stop:
 	symfony server:stop
@@ -32,7 +38,7 @@ start-messenger:
 # fails: symfony run psql
 # works: symfony run psql app app -h 0.0.0.0 -p 5432    (!ChangeMe!)
 db-connect:
-	docker compose exec database psql app app
+	docker compose exec database psql $(POSTGRES_DB) $(POSTGRES_USER)
 
 db-reload:
 	symfony console doctrine:database:drop --force --env=dev || true
@@ -48,6 +54,7 @@ migration:
 migrate:
 	./bin/console doctrine:migrations:migrate
 
+
 .PHONY: tests
 
 tests:
@@ -56,4 +63,9 @@ tests:
 	symfony console doctrine:migrations:migrate -n --env=test
 	symfony console doctrine:fixtures:load -n --env=test
 	symfony php bin/phpunit $(MAKECMDGOALS)
+
+
+.PHONY: test
+test:
+	@echo $(MAKECMDGOALS)
 
