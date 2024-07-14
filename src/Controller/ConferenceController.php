@@ -17,12 +17,16 @@ use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Psr\Log\LoggerInterface;
-use App\SpamChecker;
+//use App\SpamChecker;
+use App\Message\CommentMessage;
+use Symfony\Component\Messenger\MessageBusInterface;
+
 
 class ConferenceController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private MessageBusInterface $bus,
         private LoggerInterface $logger,
     ) {
     }
@@ -43,7 +47,7 @@ class ConferenceController extends AbstractController
         Request $request
         , Conference $conference
         , CommentRepository $commentRepository
-        , SpamChecker $spamChecker
+        //, SpamChecker $spamChecker
         , #[Autowire('%photo_dir%')] string $photoDir,
         ): Response
     {
@@ -69,16 +73,18 @@ class ConferenceController extends AbstractController
                 'referrer'   => $request->headers->get('referer'),
                 'permalink'  => $request->getUri(),
             ];
-            $spamScore = $spamChecker->getSpamScore($comment, $context);
-$this->logger->info('XXX - '.__METHOD__.' spamScore='.$spamScore);
-            if (2 === $spamScore) {
-                throw new \RuntimeException('Blatant spam, go away!');
-            }
-            if (1 === $spamScore) {
-                $comment->setStatus('spam');
-            }
+
+//             $spamScore = $spamChecker->getSpamScore($comment, $context);
+// $this->logger->info('XXX - '.__METHOD__.' spamScore='.$spamScore);
+//             if (2 === $spamScore) {
+//                 throw new \RuntimeException('Blatant spam, go away!');
+//             }
+//             if (1 === $spamScore) {
+//                 $comment->setStatus('spam');
+//             }
 
             $this->entityManager->flush();
+            $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
 
             return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
         }
