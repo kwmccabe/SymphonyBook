@@ -27,7 +27,9 @@ start-docker:
 start-server:
 	symfony server:start -d
 
-# foreground: symfony console messenger:consume async -vv
+# symfony console messenger:consume async -vv
+# symfony console messenger:failed:show
+# symfony console messenger:failed:retry
 start-messenger:
 	symfony run -d --watch=config,src,templates,vendor/composer/installed.json symfony console messenger:consume async
 
@@ -67,5 +69,5 @@ tests:
 
 .PHONY: test
 test:
-	@echo $(MAKECMDGOALS)
+	@echo $(PATH)
 

@@ -134,8 +134,10 @@ class Comment
 
     public function setStatus(string $status): static
     {
-        $allowed = ['submitted', 'spam', 'published'];
-        $this->status = in_array($status, $allowed) ? $status : $allowed[0];
+        $this->status = $status;
+
+//         $allowed = ['submitted', 'spam', 'published'];
+//         $this->status = in_array($status, $allowed) ? $status : $allowed[0];
 
         return $this;
     }
