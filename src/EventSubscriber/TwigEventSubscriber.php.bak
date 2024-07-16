@@ -10,6 +10,9 @@ use App\Repository\ConferenceRepository;
 use Twig\Environment;
 
 
+/*
+ * add $conferences global for all twig
+ */
 class TwigEventSubscriber implements EventSubscriberInterface
 {
     private $twig;

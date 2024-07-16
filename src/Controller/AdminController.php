@@ -15,7 +15,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use Twig\Environment;
 
+use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
+#[Route('/admin')]
 class AdminController extends AbstractController
 {
     public function __construct(
@@ -25,7 +28,7 @@ class AdminController extends AbstractController
     ) {
     }
 
-    #[Route('/admin/comment/review/{id}', name: 'review_comment')]
+    #[Route('/comment/review/{id}', name: 'review_comment')]
     public function reviewComment(Request $request, Comment $comment, WorkflowInterface $commentStateMachine): Response
     {
         $accepted = !$request->query->get('reject');
@@ -54,4 +57,17 @@ class AdminController extends AbstractController
             'comment' => $comment,
         ]));
     }
+
+    #[Route('/http-cache/{uri<.*>}', methods: ['PURGE'])]
+    public function purgeHttpCache(KernelInterface $kernel, Request $request, string $uri, StoreInterface $store): Response
+    {
+        if ('prod' === $kernel->getEnvironment()) {
+            return new Response('KO', 400);
+        }
+
+        $store->purge($request->getSchemeAndHttpHost().'/'.$uri);
+
+        return new Response('Done');
+    }
+
 }
