@@ -8,18 +8,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Conference;
 use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Repository\ConferenceRepository;
 use App\Repository\CommentRepository;
 
-use App\Form\CommentType;
-use Doctrine\ORM\EntityManagerInterface;
-
-use Psr\Log\LoggerInterface;
-//use App\SpamChecker;
-use App\Message\CommentMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\CommentMessage;
+
+//use App\SpamChecker;
+use Psr\Log\LoggerInterface;
 
 
 class ConferenceController extends AbstractController
@@ -36,7 +36,7 @@ class ConferenceController extends AbstractController
     {
         return $this->render('conference/index.html.twig', [
              'conferences' => $conferenceRepository->findAll(),
-        ]);
+        ])->setSharedMaxAge(3600);
     }
 
     /*

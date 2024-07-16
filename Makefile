@@ -30,15 +30,25 @@ start-server:
 # symfony console messenger:consume async -vv
 # symfony console messenger:failed:show
 # symfony console messenger:failed:retry
+
 start-messenger:
 	symfony run -d --watch=config,src,templates,vendor/composer/installed.json symfony console messenger:consume async
 
+
+.PHONY: start-docker-socket stop-docker-socket
+
+start-docker-socket:
+	sudo ln -s ~/.docker/run/docker.sock /var/run/docker.sock
+
+stop-docker-socket:
+	sudo rm /var/run/docker.sock
 
 
 .PHONY: db-connect db-reload
 
 # fails: symfony run psql
-# works: symfony run psql app app -h 0.0.0.0 -p 5432    (!ChangeMe!)
+# works: symfony run psql app app -h 127.0.0.1 -p 5432    (!ChangeMe!)
+# works: symfony run psql app app -h 0.0.0.0 -p 5432      (!ChangeMe!)
 db-connect:
 	docker compose exec database psql $(POSTGRES_DB) $(POSTGRES_USER)
 
@@ -67,7 +77,8 @@ tests:
 	symfony php bin/phpunit $(MAKECMDGOALS)
 
 
-.PHONY: test
-test:
+.PHONY: doit
+doit:
 	@echo $(PATH)
+	@ls -la ~/.docker/run/docker.sock
 
