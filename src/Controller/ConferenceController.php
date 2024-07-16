@@ -36,7 +36,8 @@ class ConferenceController extends AbstractController
     {
         return $this->render('conference/index.html.twig', [
              'conferences' => $conferenceRepository->findAll(),
-        ])->setSharedMaxAge(600);
+        ]);
+        //])->setSharedMaxAge(600);
     }
 
     #[Route('/conference_header', name: 'conference_header')]
@@ -44,7 +45,8 @@ class ConferenceController extends AbstractController
     {
         return $this->render('conference/header.html.twig', [
             'conferences' => $conferenceRepository->findAll(),
-        ])->setSharedMaxAge(600);
+        ]);
+        //])->setSharedMaxAge(600);
     }
 
     #[Route('/conference/{slug}', name: 'conference')]

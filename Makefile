@@ -6,7 +6,6 @@ SHELL := /bin/bash
 
 
 .PHONY: start status stop
-
 start: start-docker start-server start-messenger
 
 status:
@@ -19,8 +18,7 @@ stop:
 	docker compose down
 
 
-.PHONY: start-docker start-server start-messenger
-
+.PHONY: start-docker start-server start-messenger npm-watch
 start-docker:
 	docker compose up -d
 
@@ -34,9 +32,25 @@ start-server:
 start-messenger:
 	symfony run -d --watch=config,src,templates,vendor/composer/installed.json symfony console messenger:consume async
 
+npm-watch:
+	symfony run -d npm run watch
+
+
+.PHONY: npm-build
+npm-build:
+	symfony run npm run dev
+
+
+.PHONY: cache-clear cache-purge
+cache-clear:
+	rm -rf var/cache/dev/http_cache/
+
+cache-purge:
+	curl -s -I -X PURGE -u admin:admin `symfony var:export SYMFONY_PROJECT_DEFAULT_ROUTE_URL`admin/http-cache/
+	curl -s -I -X PURGE -u admin:admin `symfony var:export SYMFONY_PROJECT_DEFAULT_ROUTE_URL`admin/http-cache/conference_header
+
 
 .PHONY: start-docker-socket stop-docker-socket
-
 start-docker-socket:
 	sudo ln -s ~/.docker/run/docker.sock /var/run/docker.sock
 
@@ -45,7 +59,6 @@ stop-docker-socket:
 
 
 .PHONY: db-connect db-reload
-
 # fails: symfony run psql
 # works: symfony run psql app app -h 127.0.0.1 -p 5432    (!ChangeMe!)
 # works: symfony run psql app app -h 0.0.0.0 -p 5432      (!ChangeMe!)
@@ -58,8 +71,8 @@ db-reload:
 	symfony console doctrine:migrations:migrate -n --env=dev
 	symfony console doctrine:fixtures:load -n --env=dev
 
-.PHONY: migration migrate
 
+.PHONY: migration migrate
 migration:
 	./bin/console make:migration
 
@@ -68,7 +81,6 @@ migrate:
 
 
 .PHONY: tests
-
 tests:
 	symfony console doctrine:database:drop --force --env=test || true
 	symfony console doctrine:database:create --env=test
