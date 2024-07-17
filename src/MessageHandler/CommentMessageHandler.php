@@ -3,18 +3,18 @@
 namespace App\MessageHandler;
 
 use App\Message\CommentMessage;
-use App\ImageOptimizer;
 use App\Repository\CommentRepository;
 use App\SpamChecker;
-use Doctrine\ORM\EntityManagerInterface;
+use App\ImageOptimizer;
+use App\Notification\CommentReviewNotification;
 
-use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-use Symfony\Bridge\Twig\Mime\NotificationEmail;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Mailer\MailerInterface;
+use Psr\Log\LoggerInterface;
 
 // Autowire doesn't work here?  Set in services.yaml
 //use Symfony\Component\Messenger\Attribute\AsMessageHandler;  // use #[AsMessageHandler]
@@ -28,8 +28,7 @@ class CommentMessageHandler
         private CommentRepository $commentRepository,
         private MessageBusInterface $bus,
         private WorkflowInterface $commentStateMachine,
-        private MailerInterface $mailer,
-        #[Autowire('%admin_email%')] private string $adminEmail,
+        private NotifierInterface $notifier,
         private ImageOptimizer $imageOptimizer,
         #[Autowire('%photo_dir%')] private string $photoDir,
         private ?LoggerInterface $logger = null,
@@ -38,7 +37,7 @@ class CommentMessageHandler
 
     public function __invoke(CommentMessage $message) : void
     {
-$this->logger->debug('XXX');
+$this->logger->debug('XXX'.__METHOD__);
 
         $comment = $this->commentRepository->find($message->getId());
         if (!$comment) {
@@ -71,20 +70,29 @@ $this->logger->debug('XXX');
 //             $this->commentStateMachine->apply($comment, $this->commentStateMachine->can($comment, 'publish') ? 'publish' : 'publish_ham');
 //             $this->entityManager->flush();
 
-            $this->mailer->send((new NotificationEmail())
-                ->subject('New comment posted')
-                ->htmlTemplate('emails/comment_notification.html.twig')
-                ->from($this->adminEmail)
-                ->to($this->adminEmail)
-                ->context(['comment' => $comment])
-            );
+//             $this->mailer->send((new NotificationEmail())
+//                 ->subject('New comment posted')
+//                 ->htmlTemplate('emails/comment_notification.html.twig')
+//                 ->from($this->adminEmail)
+//                 ->to($this->adminEmail)
+//                 ->context(['comment' => $comment])
+//             );
 
-        } elseif ($this->commentStateMachine->can($comment, 'optimize')) {
+            $this->notifier->send(new CommentReviewNotification($comment), ...$this->notifier->getAdminRecipients());
+
+            //$notification = new CommentReviewNotification($comment, $message->getReviewUrl());
+            //$this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
+
+
+        } elseif ($this->commentStateMachine->can($comment, 'optimize'))
+        {
             if ($comment->getPhotoFilename()) {
                 $this->imageOptimizer->resize($this->photoDir.'/'.$comment->getPhotoFilename());
             }
             $this->commentStateMachine->apply($comment, 'optimize');
             $this->entityManager->flush();
+
+            // notify comment.email ???
 
         } elseif ($this->logger) {
             $this->logger->debug('Dropping comment message', ['comment' => $comment->getId(), 'status' => $comment->getStatus()]);

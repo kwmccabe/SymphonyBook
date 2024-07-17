@@ -28,6 +28,7 @@ class AdminController extends AbstractController
     ) {
     }
 
+    // used by templates/emails/comment_notification.html.twig
     #[Route('/comment/review/{id}', name: 'review_comment')]
     public function reviewComment(Request $request, Comment $comment, WorkflowInterface $commentStateMachine): Response
     {

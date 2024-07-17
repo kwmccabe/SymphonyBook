@@ -30,3 +30,6 @@ services:
 
     App\MessageHandler\CommentMessageHandler:
         tags: [messenger.message_handler]
+
+    notifier.flash_message_importance_mapper:
+        class: Symfony\Component\Notifier\FlashMessage\BootstrapFlashMessageImportanceMapper

@@ -83,6 +83,17 @@ class CommentRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
+    public function findOneByEmail($value): ?Comment
+    {
+       return $this->createQueryBuilder('c')
+           ->andWhere('c.email = :val')
+           ->setParameter('val', $value)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+    }
+
+
     //    /**
     //     * @return Comment[] Returns an array of Comment objects
     //     */
@@ -107,15 +118,5 @@ class CommentRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-
-    public function findOneByEmail($value): ?Comment
-    {
-       return $this->createQueryBuilder('c')
-           ->andWhere('c.email = :val')
-           ->setParameter('val', $value)
-           ->getQuery()
-           ->getOneOrNullResult()
-       ;
-    }
 
 }
