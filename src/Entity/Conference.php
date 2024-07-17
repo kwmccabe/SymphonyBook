@@ -9,33 +9,51 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
+
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 #[UniqueEntity('slug')]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'conference:item']),
+        new GetCollection(normalizationContext: ['groups' => 'conference:list'])
+    ],
+    order: ['year' => 'DESC', 'city' => 'ASC'],
+    paginationEnabled: false,
+)]
 class Conference
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "SEQUENCE")]
     #[ORM\Column]
+    #[Groups(['conference:list', 'conference:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['conference:list', 'conference:item'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 4)]
+    #[Groups(['conference:list', 'conference:item'])]
     private ?string $year = null;
 
     #[ORM\Column]
+    #[Groups(['conference:list', 'conference:item'])]
     private ?bool $isInternational = null;
+
+    #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['conference:list', 'conference:item'])]
+    private ?string $slug = null;
 
     /**
      * @var Collection<int, Comment>
      */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'conference', orphanRemoval: true)]
     private Collection $comments;
-
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $slug = null;
 
     /*
      * constructor
@@ -98,6 +116,18 @@ class Conference
         return $this;
     }
 
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Comment>
      */
@@ -128,15 +158,4 @@ class Conference
         return $this;
     }
 
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(string $slug): static
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
 }
