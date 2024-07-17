@@ -94,4 +94,5 @@ $this->logger->debug('XXX');
 
         $this->entityManager->flush();
     }
-}
+
+}  // end class CommentMessageHandler
