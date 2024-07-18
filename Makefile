@@ -32,13 +32,13 @@ start-server:
 start-messenger:
 	symfony run -d --watch=config,src,templates,vendor/composer/installed.json symfony console messenger:consume async
 
-npm-watch:
-	symfony run -d npm run watch
 
-
-.PHONY: npm-build
+.PHONY: npm-build npm-watch
 npm-build:
 	symfony run npm run dev
+
+npm-watch:
+	symfony run -d npm run watch
 
 
 .PHONY: cache-clear cache-purge
@@ -89,8 +89,23 @@ tests:
 	symfony php bin/phpunit $(MAKECMDGOALS)
 
 
+.PHONY: spa-start spa-stop spa-build spa-status
+spa-start:
+	cd spa; symfony server:start -d --passthru=index.html
+
+spa-stop:
+	cd spa; symfony server:stop
+
+spa-build:
+	cd spa; API_ENDPOINT=`symfony var:export SYMFONY_PROJECT_DEFAULT_ROUTE_URL --dir=..` ./node_modules/.bin/encore dev
+
+spa-status:
+	cd spa; symfony server:status
+
+
 .PHONY: doit
 doit:
 	@echo $(PATH)
 	@ls -la ~/.docker/run/docker.sock
+
 
