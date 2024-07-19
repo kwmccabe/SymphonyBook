@@ -20,10 +20,14 @@ class CommentType extends AbstractType
     {
         $builder
             ->add('author', null, [
-                'label' => 'Your name',
+                'label' => 'comment_form.author',
              ])
-            ->add('text')
-            ->add('email', EmailType::class)
+            ->add('text', null, [
+                'label' => 'comment_form.text',
+             ])
+            ->add('email', EmailType::class, [
+                'label' => 'comment_form.email',
+             ])
 //             ->add('createdAt', null, [
 //                 'widget' => 'single_text',
 //             ])
@@ -33,13 +37,16 @@ class CommentType extends AbstractType
 //                 'choice_label' => 'id',
 //             ])
             ->add('photo', FileType::class, [
+                'label' => 'comment_form.photo',
                 'required' => false,
                 'mapped' => false,
                 'constraints' => [
                     new Image(['maxSize' => '10M'])
                 ],
              ])
-            ->add('submit', SubmitType::class)
+            ->add('submit', SubmitType::class, [
+                'label' => 'comment_form.submit',
+             ])
         ;
     }
 

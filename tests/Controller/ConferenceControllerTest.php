@@ -28,7 +28,7 @@ class ConferenceControllerTest extends WebTestCase
     public function testConferencePage()
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $crawler = $client->request('GET', '/en/');
 
 //         $response = $client->getResponse();
 //         echo __METHOD__.' : response : ' .print_r($response,true);
@@ -48,7 +48,7 @@ class ConferenceControllerTest extends WebTestCase
         $email = 'me@automat.ed';
 
         $client = static::createClient();
-        $client->request('GET', '/conference/amsterdam-2019');
+        $client->request('GET', '/en/conference/amsterdam-2019');
         $client->submitForm('Submit', [
             'comment[author]' => 'Fabien',
             'comment[text]' => 'Some feedback from an automated functional test',

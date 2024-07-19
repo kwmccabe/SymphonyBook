@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="es" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="eOy4.6V" resname="Conference Guestbook">
+        <source>Conference Guestbook</source>
+        <target>Libro de visitas de la conferencia</target>
+      </trans-unit>
+      <trans-unit id="LNAVleg" resname="Give your feedback!">
+        <source>Give your feedback!</source>
+        <target>Da tu opinión!</target>
+      </trans-unit>
+      <trans-unit id="3Mg5pAF" resname="View">
+        <source>View</source>
+        <target>Vista</target>
+      </trans-unit>
+      <trans-unit id="TlZecGS" resname="Conference">
+        <source>Conference</source>
+        <target>Conferencia</target>
+      </trans-unit>
+      <trans-unit id="maMQz7W" resname="nb_of_comments">
+        <source>nb_of_comments</source>
+        <target>{count, plural, =0 {Hay 0 comentarios.} one {Hay 1 comentario.} other {Hay # comentarios..}}</target>
+      </trans-unit>
+
+      <trans-unit id="comment_form.author">
+        <source>comment_form.author</source>
+        <target>Su Nombre</target>
+      </trans-unit>
+      <trans-unit id="comment_form.email">
+        <source>comment_form.email</source>
+        <target>Su Email</target>
+      </trans-unit>
+      <trans-unit id="comment_form.text">
+        <source>comment_form.text</source>
+        <target>Comentario</target>
+      </trans-unit>
+      <trans-unit id="comment_form.photo">
+        <source>comment_form.photo</source>
+        <target>Photo</target>
+      </trans-unit>
+      <trans-unit id="comment_form.submit">
+        <source>comment_form.submit</source>
+        <target>Entregar</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>

@@ -5,17 +5,23 @@ include .env.local
 SHELL := /bin/bash
 
 
-.PHONY: start status stop
+.PHONY: start stop status vars open
 start: start-docker start-server start-messenger
+
+stop:
+	symfony server:stop
+	docker compose down
 
 status:
 	symfony console messenger:failed:show
 	docker compose ps
 	symfony server:status
 
-stop:
-	symfony server:stop
-	docker compose down
+vars:
+	symfony var:export --debug
+
+open:
+	symfony open:local
 
 
 .PHONY: start-docker start-server start-messenger npm-watch
@@ -79,6 +85,11 @@ migration:
 migrate:
 	./bin/console doctrine:migrations:migrate
 
+.PHONY: translation
+translation:
+	symfony console translation:extract es --force --domain=messages
+	symfony console translation:extract en --force --domain=messages
+
 
 .PHONY: tests
 tests:
@@ -89,18 +100,21 @@ tests:
 	symfony php bin/phpunit $(MAKECMDGOALS)
 
 
-.PHONY: spa-start spa-stop spa-build spa-status
+.PHONY: spa-start spa-stop spa-status spa-build spa-open
 spa-start:
 	cd spa; symfony server:start -d --passthru=index.html
 
 spa-stop:
 	cd spa; symfony server:stop
 
+spa-status:
+	cd spa; symfony server:status
+
 spa-build:
 	cd spa; API_ENDPOINT=`symfony var:export SYMFONY_PROJECT_DEFAULT_ROUTE_URL --dir=..` ./node_modules/.bin/encore dev
 
-spa-status:
-	cd spa; symfony server:status
+spa-open:
+	cd spa; symfony open:local
 
 
 .PHONY: doit
