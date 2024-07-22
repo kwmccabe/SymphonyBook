@@ -6,7 +6,7 @@ SHELL := /bin/bash
 
 
 .PHONY: start stop status vars open
-start: start-docker start-server start-messenger
+start: start-docker start-server
 
 stop:
 	symfony server:stop
@@ -24,7 +24,7 @@ open:
 	symfony open:local
 
 
-.PHONY: start-docker start-server start-messenger npm-watch
+.PHONY: start-docker start-server start-messenger start-npm
 start-docker:
 	docker compose up -d
 
@@ -38,13 +38,13 @@ start-server:
 start-messenger:
 	symfony run -d --watch=config,src,templates,vendor/composer/installed.json symfony console messenger:consume async
 
+start-npm:
+	symfony run -d npm run watch
 
-.PHONY: npm-build npm-watch
+
+.PHONY: npm-build
 npm-build:
 	symfony run npm run dev
-
-npm-watch:
-	symfony run -d npm run watch
 
 
 .PHONY: cache-clear cache-purge
@@ -115,6 +115,17 @@ spa-build:
 
 spa-open:
 	cd spa; symfony open:local
+
+
+.PHONY: redis-connect redis-info redis-ping
+redis-connect:
+	docker compose exec redis sh
+
+redis-info:
+	docker compose exec redis redis-cli INFO
+
+redis-ping:
+	docker compose exec redis redis-cli ping
 
 
 .PHONY: doit
